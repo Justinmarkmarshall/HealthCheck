@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: healthcheckdemo-deployment
+spec:
+  selector:
+    matchLabels:
+      app: healthcheckdemo-pod
+  template:
+    metadata:
+      labels:
+        app: healthcheckdemo-pod
+    spec:
+      containers:
+      - name: healthcheckdemo-container
+        image: jmarshall970/healthcheckdemo:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+        startupProbe:
+          failureThreshold: 30
+          httpGet:
+            path: /health
+            port: 80
+          periodSeconds: 10  

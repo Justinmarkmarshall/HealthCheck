@@ -49,7 +49,8 @@ namespace HealthCheckDemo
                 //we can actually put these into different checks, will more than one it will return the worst one
                 // however we can select which ones we want to prioritise using tags, maybe buzz service is less important than foo bar services
                 .AddCheck("bar service", () => HealthCheckResult.Healthy("the bar service is healthy"), new[] { "service" })
-                .AddCheck("buzz service", () => HealthCheckResult.Unhealthy("the buzz service is f**ked"), new[] { "sql" });
+                .AddCheck("buzz service", () => HealthCheckResult.Unhealthy("the buzz service is unhealthy"), new[] { "sql" })
+                .AddCheck<CustomCheck>("Custom check", tags: new[] { "custom" });
 
             services.AddSingleton<WeatherForecastService>();
         }
@@ -98,6 +99,11 @@ namespace HealthCheckDemo
                     Predicate = reg => reg.Tags.Contains("service"),
                     //give me the full JSON
                     ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+                });
+
+                endpoints.MapHealthChecks("/health/custom", new HealthCheckOptions()
+                {
+                    Predicate = reg => reg.Tags.Contains("custom")
                 });
 
                 endpoints.MapBlazorHub();
